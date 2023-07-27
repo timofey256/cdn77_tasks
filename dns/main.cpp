@@ -4,6 +4,7 @@
 #include <vector>
 
 using dns_record = std::pair<std::string, int>;
+const std::string file_name = "./routing-data-short.txt";
 
 // returns a root of the trie
 void construct_trie(std::vector<std::string> addresses) {
@@ -34,7 +35,6 @@ std::vector<dns_record> parse_addresses(std::string path) {
 }
 
 int main() {
-	const std::string file_name = "./routing-data-short.txt";
 	std::vector<dns_record> records = parse_addresses(file_name);
 
 	for (dns_record rec : records) {
