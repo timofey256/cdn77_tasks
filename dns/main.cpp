@@ -22,7 +22,8 @@ class DNSRecordsTrie {
 public:
 	DNSRecordsTrie() {
 		root = new Node;
-
+		
+		root->is_word_end = false;
 		root->children[0] = NULL;
 		root->children[1] = NULL;
 	}
@@ -45,8 +46,25 @@ public:
 		cur->pop_id = rec.second;
 	}	
 	
-	dns_record resolve_ip(std::string ip) {
-		// ...	
+	dns_record resolve_ip(std::string hex_ip) {
+		dns_record best_fit;
+
+		std::string ip = ip_to_binary_str(hex_ip);
+
+		Node* cur = root;
+		int bit_idx = 0;
+		while (cur != NULL) {
+			if (cur->is_word_end == true) {
+				best_fit.first = cur->address;
+				best_fit.second = cur->pop_id;
+			}
+			
+			int bit = (int)(ip[bit_idx] - '0');
+			bit_idx += 1;
+			cur = cur->children[bit];
+		}
+
+		return best_fit;
 	}
 
 private:
@@ -63,12 +81,10 @@ private:
 				break;
 			}
 			else {
-				std::cout << ip[i] << " = " << hex_char_to_bin(ip[i]) << std::endl;
 				binary += hex_char_to_bin(ip[i]);
 			}
 		}
 		
-		std::cout << binary << std::endl;
 		return binary;
 	}
 
@@ -131,9 +147,12 @@ int main() {
 	std::vector<dns_record> records = parse_addresses(file_name);
 	DNSRecordsTrie trie;	
 	for (dns_record rec : records) {
-		std::cout << rec.first << " " << rec.second << std::endl;
 		trie.insert(rec);
 	}
-
+	
+	std::string ip = "2001:49f0:d0b8:8a00::/56";
+	dns_record rec = trie.resolve_ip(ip);
+	std::cout << rec.first << std::endl;
+	
 	return 0;
 }
