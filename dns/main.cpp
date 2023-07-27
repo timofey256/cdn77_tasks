@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <bits/stdc++.h>
 
 using dns_record = std::pair<std::string, int>;
 const std::string file_name = "./routing-data-short.txt";
@@ -51,8 +52,24 @@ public:
 private:
 	Node* root;
 	
-	std::string ip_to_binary_str(std::string) {
-		// ...
+	std::string ip_to_binary_str(std::string ip) {
+		std::string binary = "";
+
+		for (int i=0; i < ip.length(); i++) {
+			if (ip[i] == ':') {
+				continue;
+			}
+			else if (ip[i] == '/') {
+				break;
+			}
+			else {
+				std::cout << ip[i] << " = " << hex_char_to_bin(ip[i]) << std::endl;
+				binary += hex_char_to_bin(ip[i]);
+			}
+		}
+		
+		std::cout << binary << std::endl;
+		return binary;
 	}
 
 	Node* get_node(bool bit) {
@@ -63,7 +80,29 @@ private:
 		
 		return node;
 	}
-}
+	
+	// i tried to use some libs to make it in a less uglier way but it seems like the most simple way to convert :-/
+	std::string hex_char_to_bin(char c) {
+	    switch(c) {
+		case '0': return "0000";
+		case '1': return "0001";
+		case '2': return "0010";
+		case '3': return "0011";
+		case '4': return "0100";
+		case '5': return "0101";
+		case '6': return "0110";
+		case '7': return "0111";
+		case '8': return "1000";
+		case '9': return "1001";
+		case 'a': return "1010";
+		case 'b': return "1011";
+		case 'c': return "1100";
+		case 'd': return "1101";
+		case 'e': return "1110";
+		case 'f': return "1111";
+	    }
+	}
+};
 
 std::vector<dns_record> parse_addresses(std::string path) {
 	std::vector<dns_record> addresses;
@@ -90,9 +129,10 @@ std::vector<dns_record> parse_addresses(std::string path) {
 
 int main() {
 	std::vector<dns_record> records = parse_addresses(file_name);
-
+	DNSRecordsTrie trie;	
 	for (dns_record rec : records) {
 		std::cout << rec.first << " " << rec.second << std::endl;
+		trie.insert(rec);
 	}
 
 	return 0;
