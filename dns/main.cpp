@@ -35,7 +35,7 @@ public:
 		for (int i=0; i < binary_ip.length(); i++) {
 			int bit = (int)(binary_ip[i] - '0');
 			if (cur->children[bit] == NULL) {
-				cur->children[bit] = get_node(bit);
+				cur->children[bit] = get_new_node(bit);
 			}
 
 			cur = cur->children[bit];	
@@ -70,6 +70,7 @@ public:
 private:
 	Node* root;
 	
+	// for example, 2001:49f0:d0b8:: -> 0001_0100_0000_0001_0011_0001...
 	std::string ip_to_binary_str(std::string ip) {
 		std::string binary = "";
 
@@ -88,7 +89,7 @@ private:
 		return binary;
 	}
 
-	Node* get_node(bool bit) {
+	Node* get_new_node(bool bit) {
 		Node* node = new Node;
 		node->bit = bit;
 		node->children[0] = NULL;
@@ -97,7 +98,8 @@ private:
 		return node;
 	}
 	
-	// i tried to use some libs to make it in a less uglier way but it seems like the most simple way to convert :-/
+	// ifk if it is a good way to solve this but i feel like yes because hexadecimal system (hopefully) won't change. so there's no need to make it less hardcoded. 
+	// the other advantage is that it is also very obvious what this function does. 
 	std::string hex_char_to_bin(char c) {
 	    switch(c) {
 		case '0': return "0000";
