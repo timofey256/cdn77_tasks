@@ -98,7 +98,7 @@ private:
 		return node;
 	}
 	
-	// ifk if it is a good way to solve this but i feel like yes because hexadecimal system (hopefully) won't change. so there's no need to make it less hardcoded. 
+	// idk if it is a good way to solve this but i feel like yes because hexadecimal system (hopefully) won't change. so there's no need to make it less hardcoded. 
 	// the other advantage is that it is also very obvious what this function does. 
 	std::string hex_char_to_bin(char c) {
 	    switch(c) {
