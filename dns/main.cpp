@@ -5,6 +5,7 @@
 #include <bits/stdc++.h>
 
 using dns_record = std::pair<std::string, int>;
+using dns_response = std::pair<unsigned int, int>;
 const std::string file_name = "./routing-data-short.txt";
 
 struct Node {
@@ -13,7 +14,7 @@ struct Node {
 
 	// if is_word_end == false, then these properties will be empty
 	std::string address;
-	int pop_id;
+	unsigned int pop_id;
 
 	Node* children[2];
 };
@@ -46,7 +47,7 @@ public:
 		cur->pop_id = rec.second;
 	}	
 	
-	dns_record resolve_ip(std::string hex_ip) {
+	dns_response resolve_ip(std::string hex_ip) {
 		dns_record best_fit;
 
 		std::string ip = ip_to_binary_str(hex_ip);
@@ -63,13 +64,23 @@ public:
 			bit_idx += 1;
 			cur = cur->children[bit];
 		}
+		
+		dns_response response;
+		response.first = best_fit.second;
+		response.second = get_address_scope(best_fit.first);
 
-		return best_fit;
+		return response;
 	}
 
 private:
 	Node* root;
 	
+	int get_address_scope(std::string address) {
+		size_t delimiter_index = address.find('/');
+		std::string scope_str = address.substr(delimiter_index + 1, address.length() - delimiter_index);
+		return std::stoi(scope_str);
+	}
+
 	// for example, 2001:49f0:d0b8:: -> 0001_0100_0000_0001_0011_0001...
 	std::string ip_to_binary_str(std::string ip) {
 		std::string binary = "";
@@ -119,6 +130,7 @@ private:
 		case 'e': return "1110";
 		case 'f': return "1111";
 	    }
+	
 	}
 };
 
@@ -153,8 +165,9 @@ int main() {
 	}
 	
 	std::string ip = "2001:49f0:d0b8:8a00::/56";
-	dns_record rec = trie.resolve_ip(ip);
-	std::cout << rec.first << std::endl;
+	dns_response res = trie.resolve_ip(ip);
+	std::cout << res.first << std::endl;
+	std::cout << res.second << std::endl;
 	
 	return 0;
 }
