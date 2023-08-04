@@ -573,35 +573,6 @@ ngx_http_upstream_init_request(ngx_http_request_t *r)
 
         rc = ngx_http_upstream_cache(r, u);
 
-	ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "LOOK HERE!!! cache file name : %s", r->cache->file.name.data);
-	ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "LOOK HERE!!! cache key : %s", (char*)r->cache->key);
-	ngx_log_debug1(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "LOOK HERE!!! cache main : %s", (char*)r->cache->main);
-
-	ngx_table_elt_t *h;
-	
-	h = ngx_list_push(&r->headers_out.headers);
-	
-	if (h == NULL) {
-		ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "Error. Couldn't add new header.");
-	}
-	else {
-		const char* key = "X-Cache-Key";
-		ngx_str_t key_str;
-		key_str.data = (u_char*)key;
-		key_str.len = strlen(key);
-		
-		const char* value = (char*)r->cache->file.name.data;
-		const char* value_cached_key = (char*)value + strlen(value) - 32; 
-		ngx_str_t value_str;
-		value_str.data = (u_char*)value_cached_key;
-		value_str.len = strlen(value_cached_key);
-			
-		h->key = key_str;
-		h->value = value_str;
-
-		h->hash = 1;
-	}
-
         if (rc == NGX_BUSY) {
             r->write_event_handler = ngx_http_upstream_init_request;
             return;
@@ -2969,6 +2940,31 @@ ngx_http_upstream_process_headers(ngx_http_request_t *r, ngx_http_upstream_t *u)
     if (r->headers_out.date && r->headers_out.date->value.data == NULL) {
         r->headers_out.date->hash = 0;
     }
+
+    ngx_table_elt_t *cache_key_header;
+	
+	cache_key_header = ngx_list_push(&r->headers_out.headers);
+	
+	if (cache_key_header == NULL) {
+		ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "Error. Couldn't add X-Cache-Key header.");
+	}
+	else {
+		const char* key = "X-Cache-Key";
+		ngx_str_t key_str;
+		key_str.data = (u_char*)key;
+		key_str.len = strlen(key);
+		
+		const char* value = (char*)r->cache->file.name.data;
+		const char* value_cached_key = (char*)value + strlen(value) - 32; 
+		ngx_str_t value_str;
+		value_str.data = (u_char*)value_cached_key;
+		value_str.len = strlen(value_cached_key);
+			
+		cache_key_header->key = key_str;
+		cache_key_header->value = value_str;
+
+		cache_key_header->hash = 1;
+	}
 
     r->headers_out.status = u->headers_in.status_n;
     r->headers_out.status_line = u->headers_in.status_line;
