@@ -1,4 +1,4 @@
-2811a2812,2840
+2811a2812,2839
 > static ngx_int_t 
 > ngx_http_upstream_add_x_cache_key(ngx_http_request_t *r)
 > {
@@ -9,26 +9,25 @@
 >     if (cache_key_header == NULL) {
 > 	    return NGX_ERROR;
 >     }
->     else {
-> 	    const char* header_name= "X-Cache-Key";
-> 	    ngx_str_t header_name_str;
-> 	    header_name_str.data = (u_char*)header_name;
-> 	    header_name_str.len = strlen(header_name);
-> 		
-> 	    const char* file_path = (char*)r->cache->file.name.data;
-> 	    const char* key = (char*)file_path + strlen(file_path) - 2*NGX_HTTP_CACHE_KEY_LEN; 
-> 	    ngx_str_t key_str;
-> 	    key_str.data = (u_char*)key;
-> 	    key_str.len = strlen(key);
-> 			
-> 	    cache_key_header->key = header_name_str;
-> 	    cache_key_header->value = key_str;
-> 	    cache_key_header->hash = 1;
 > 
-> 	    return NGX_OK;
->     }
+>     const char* header_name= "X-Cache-Key";
+>     ngx_str_t header_name_str;
+>     header_name_str.data = (u_char*)header_name;
+>     header_name_str.len = strlen(header_name);
+> 		
+>     const char* file_path = (char*)r->cache->file.name.data;
+>     const char* key = (char*)file_path + strlen(file_path) - 2*NGX_HTTP_CACHE_KEY_LEN; 
+>     ngx_str_t key_str;
+>     key_str.data = (u_char*)key;
+>     key_str.len = strlen(key);
+> 			
+>     cache_key_header->key = header_name_str;
+>     cache_key_header->value = key_str;
+>     cache_key_header->hash = 1;
+> 
+>     return NGX_OK;
 > }
-2950a2980,2986
+2950a2979,2985
 >     #if (NGX_HTTP_CACHE)
 >  	ngx_int_t response = ngx_http_upstream_add_x_cache_key(r);
 > 	if (response == NGX_ERROR) {
@@ -36,16 +35,5 @@
 > 	}
 >     #endif
 >     
-2954a2991
+2954a2990
 > 
-2956,2958c2993,2996
-<         if (r->cached) {
-<             r->single_range = 0;
-<         }
----
-> 
->     if (r->cached) {
->         r->single_range = 0;
->     }           
-2966d3003
-< 
